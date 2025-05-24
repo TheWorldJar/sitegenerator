@@ -24,3 +24,15 @@ class HTMLNode:
         for key, value in self.props.items():
             result += f" {key}=\"{value}\""
         return result
+    
+class LeafNode(HTMLNode):
+    def __init__(self, tag: str, value: str, props: dict = None):
+        super().__init__(tag, value, [], props)
+
+    def to_html(self):
+        if self.value is None or self.value == "":
+            raise ValueError("value cannot be empty")
+        elif self.tag is None or self.tag == "":
+            return f"{self.value}"
+        else:
+            return f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>"
