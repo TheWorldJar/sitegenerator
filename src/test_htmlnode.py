@@ -1,6 +1,6 @@
 import unittest
 
-from htmlnode import HTMLNode, LeafNode
+from htmlnode import HTMLNode, LeafNode, ParentNode
 
 class TestHTMLNode(unittest.TestCase):
     def test_eq(self):
@@ -88,6 +88,65 @@ class TestLeafNode(unittest.TestCase):
     def test_to_html7(self):
         node = LeafNode("", "Hello, world!", {})
         self.assertEqual(node.to_html(), "Hello, world!")
+
+class TestParentNode(unittest.TestCase):
+    def test_eq(self):
+        node = ParentNode("div", [LeafNode("div", "Hello, world!", {})], {})
+        node2 = ParentNode("div", [LeafNode("div", "Hello, world!", {})], {})
+        self.assertEqual(node, node2)
+    
+    def test_diff(self):
+        node = ParentNode("div", [LeafNode("div", "Hello, world!", {})], {})
+        node2 = ParentNode("div", [LeafNode("div", "Hello, world!", {"href": "https://www.google.com","target": "_blank"})], {})
+        self.assertNotEqual(node, node2)
+    
+    def test_to_html_with_children(self):
+        node = ParentNode("div", [LeafNode("div", "Hello, world!", {})], {})
+        self.assertEqual(node.to_html(), "<div><div>Hello, world!</div></div>")
+    
+    def test_to_html_with_children_and_props(self):
+        node = ParentNode("div", [LeafNode("div", "Hello, world!", {"href": "https://www.google.com","target": "_blank"})], {})
+        self.assertEqual(node.to_html(), "<div><div href=\"https://www.google.com\" target=\"_blank\">Hello, world!</div></div>")
+
+    def test_to_html_with_multiple_children(self):
+        node = ParentNode("div", [LeafNode("div", "Hello, world!", {}), LeafNode("div", "Hello, world!", {})], {})
+        self.assertEqual(node.to_html(), "<div><div>Hello, world!</div><div>Hello, world!</div></div>")
+    
+    def test_to_html_with_multiple_children_and_props(self):
+        node = ParentNode("div", [LeafNode("div", "Hello, world!", {"href": "https://www.google.com","target": "_blank"}), LeafNode("div", "Hello, world!", {})], {})
+        self.assertEqual(node.to_html(), "<div><div href=\"https://www.google.com\" target=\"_blank\">Hello, world!</div><div>Hello, world!</div></div>")
+
+    def test_to_html_with_grandchildren(self):
+        node = ParentNode("div", [ParentNode("div", [LeafNode("div", "Hello, world!", {})], {})], {})
+        self.assertEqual(node.to_html(), "<div><div><div>Hello, world!</div></div></div>")
+
+    def test_to_html_with_grandchildren_and_props(self):
+        node = ParentNode("div", [ParentNode("div", [LeafNode("div", "Hello, world!", {"href": "https://www.google.com","target": "_blank"})], {})], {})
+        self.assertEqual(node.to_html(), "<div><div><div href=\"https://www.google.com\" target=\"_blank\">Hello, world!</div></div></div>")
+
+    def test_to_html_with_multiple_grandchildren(self):
+        node = ParentNode("div", [ParentNode("div", [LeafNode("div", "Hello, world!", {}), LeafNode("div", "Hello, world!", {})], {}), ParentNode("div", [LeafNode("div", "Hello, world!", {}), LeafNode("div", "Hello, world!", {})], {})], {})
+        self.assertEqual(node.to_html(), "<div><div><div>Hello, world!</div><div>Hello, world!</div></div><div><div>Hello, world!</div><div>Hello, world!</div></div></div>")
+    
+    def test_to_html_with_multiple_grandchildren_and_props(self):
+        node = ParentNode("div", [ParentNode("div", [LeafNode("div", "Hello, world!", {"href": "https://www.google.com","target": "_blank"}), LeafNode("div", "Hello, world!", {})], {}), ParentNode("div", [LeafNode("div", "Hello, world!", {}), LeafNode("div", "Hello, world!", {"href": "https://www.google.com","target": "_blank"})], {})], {})
+        self.assertEqual(node.to_html(), "<div><div><div href=\"https://www.google.com\" target=\"_blank\">Hello, world!</div><div>Hello, world!</div></div><div><div>Hello, world!</div><div href=\"https://www.google.com\" target=\"_blank\">Hello, world!</div></div></div>")
+
+    def test_to_html_with_multiple_grandchildren_and_multiple_children(self):
+        node = ParentNode("div", [ParentNode("div", [LeafNode("div", "Hello, world!", {}), LeafNode("div", "Hello, world!", {})], {}), ParentNode("div", [LeafNode("div", "Hello, world!", {}), LeafNode("div", "Hello, world!", {})], {})], {})
+        self.assertEqual(node.to_html(), "<div><div><div>Hello, world!</div><div>Hello, world!</div></div><div><div>Hello, world!</div><div>Hello, world!</div></div></div>")
+
+    def test_to_html_with_multiple_grandchildren_and_multiple_children_and_props(self):
+        node = ParentNode("div", [ParentNode("div", [LeafNode("div", "Hello, world!", {"href": "https://www.google.com","target": "_blank"}), LeafNode("div", "Hello, world!", {})], {}), ParentNode("div", [LeafNode("div", "Hello, world!", {}), LeafNode("div", "Hello, world!", {"href": "https://www.google.com","target": "_blank"})], {})], {})
+        self.assertEqual(node.to_html(), "<div><div><div href=\"https://www.google.com\" target=\"_blank\">Hello, world!</div><div>Hello, world!</div></div><div><div>Hello, world!</div><div href=\"https://www.google.com\" target=\"_blank\">Hello, world!</div></div></div>")
+    
+    def test_no_tag(self):
+        node = ParentNode(None, [LeafNode("div", "Hello, world!", {})], {})
+        self.assertRaises(ValueError, node.to_html)
+    
+    def test_no_children(self):
+        node = ParentNode("div", [], {})
+        self.assertRaises(ValueError, node.to_html)
 
 if __name__ == "__main__":
     unittest.main()
