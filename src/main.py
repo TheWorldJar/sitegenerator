@@ -1,7 +1,8 @@
-from textnode import *
+from textnode import TextNode, TextType
 
 def main():
     dummy = TextNode("This is some anchor text", TextType.LINK, "https://www.boot.dev")
-    print (dummy.__repr__())
+    print (dummy)
 
-main()
+if __name__ == "__main__":
+    main()
