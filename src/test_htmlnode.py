@@ -65,11 +65,11 @@ class TestLeafNode(unittest.TestCase):
 
     def test_to_html2(self):
         node = LeafNode("div", "", {})
-        self.assertRaises(ValueError, node.to_html())
+        self.assertRaises(ValueError, node.to_html)
 
     def test_to_html3(self):
         node = LeafNode("div", None, {})
-        self.assertRaises(ValueError, node.to_html())
+        self.assertRaises(ValueError, node.to_html)
 
     def test_to_html4(self):
         node = LeafNode("div", "Hello, world!", {"href": "https://www.google.com",
@@ -77,13 +77,12 @@ class TestLeafNode(unittest.TestCase):
         self.assertEqual(node.to_html(), "<div href=\"https://www.google.com\" target=\"_blank\">Hello, world!</div>")
 
     def test_to_html5(self):
-        node = LeafNode(None, "Hello, world!", {"href": "https://www.google.com",
-    "target": "_blank"})
+        node = LeafNode(None, "Hello, world!", {"href": "https://www.google.com", "target": "_blank"})
         self.assertEqual(node.to_html(), "Hello, world!")
 
     def test_to_html6(self):
         node = LeafNode(None, None, {})
-        self.assertRaises(ValueError, node.to_html())
+        self.assertRaises(ValueError, node.to_html)
 
     def test_to_html7(self):
         node = LeafNode("", "Hello, world!", {})
@@ -142,11 +141,11 @@ class TestParentNode(unittest.TestCase):
     
     def test_no_tag(self):
         node = ParentNode(None, [LeafNode("div", "Hello, world!", {})], {})
-        self.assertRaises(ValueError, node.to_html())
+        self.assertRaises(ValueError, node.to_html)
     
     def test_no_children(self):
         node = ParentNode("div", [], {})
-        self.assertRaises(ValueError, node.to_html())
+        self.assertRaises(ValueError, node.to_html)
 
 if __name__ == "__main__":
     unittest.main()

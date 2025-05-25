@@ -76,7 +76,7 @@ class TestTextNode(unittest.TestCase):
         
     def test_to_html_node_invalid(self):
         node = TextNode("This is an invalid node", None)
-        self.assertRaises(ValueError, node.to_html_node())
+        self.assertRaises(ValueError, node.to_html_node)
 
 if __name__ == "__main__":
     unittest.main()
