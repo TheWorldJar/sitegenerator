@@ -1,18 +1,37 @@
 import re
 from textnode import TextNode, TextType
 
-def split_into_nodes(text: list[str], delimiter: str, text_type: TextType) -> list[TextNode]:
+def split_by_text(text_nodes: list[TextNode], delimiter: str, text_type: TextType) -> list[TextNode]:
+    # This function does not allow for nested elements.
     new_nodes = []
-    for text_chunk in text:
-        if text_type not in [TextType.BOLD, TextType.ITALIC, TextType.CODE]:
-            new_nodes.append(TextNode(text_chunk, text_type))
+    for node in text_nodes:
+        if node.text_type != TextType.NORMAL:
+            new_nodes.append(node)
         else:
-            if (delimiter == "**" and text_type == TextType.BOLD) or \
-                (delimiter == "_" and text_type == TextType.ITALIC) or \
-                (delimiter == "`" and text_type == TextType.CODE):
-                new_nodes.extend(map(lambda x: TextNode(x, text_type), text_chunk.split(delimiter)))
+            match (delimiter, text_type):
+                case ("**", TextType.BOLD):
+                    matches = re.findall(r"\*\*(.*?)\*\*", node.text)
+                case ("_", TextType.ITALIC):
+                    matches = re.findall(r"\_(.*?)\_", node.text)
+                case ("`", TextType.CODE):
+                    matches = re.findall(r"\`(.*?)\`", node.text)
+                case _:
+                    raise Exception(f"Invalid delimiter: {delimiter} for text type: {text_type}")
+            if len(matches) > 0:
+                split = node.text.split(matches[0], 1)
+                new_nodes.append(TextNode(split[0].strip(delimiter), TextType.NORMAL))
+                new_nodes.append(TextNode(matches[0], text_type))
+                if split[1] != "" or split[1] != delimiter:
+                    new_nodes.append(TextNode(split[1].strip(delimiter), TextType.NORMAL))
+                for i in range (1, len(matches)):
+                    split = new_nodes[-1].text.split(matches[i], 1)
+                    new_nodes.pop()
+                    new_nodes.append(TextNode(split[0].strip(delimiter), TextType.NORMAL))
+                    new_nodes.append(TextNode(matches[i], text_type))
+                    if split[1] != "" or split[1] != delimiter:
+                        new_nodes.append(TextNode(split[1].strip(delimiter), TextType.NORMAL))
             else:
-                raise Exception(f"Invalid delimiter: {delimiter} for text type: {text_type}")
+                new_nodes.append(node)
     return new_nodes
 
 def extract_markdown_images(text: list[str]) -> list[tuple[str, str]]:
@@ -68,3 +87,14 @@ def split_into_links(text_nodes: list[TextNode]) -> list[TextNode]:
         else:
             new_nodes.append(node)
     return new_nodes
+
+def text_to_nodes(text: str) -> list[TextNode]:
+    return split_by_text(
+        split_by_text(
+            split_by_text(
+                split_into_links(
+                    split_into_images([TextNode(text, TextType.NORMAL)])
+                    ), "**", TextType.BOLD
+                    ), "_", TextType.ITALIC
+                    ), "`", TextType.CODE
+                    )
