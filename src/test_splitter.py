@@ -1,6 +1,6 @@
 import unittest
 
-from splitter import split_by_text, extract_markdown_images, extract_markdown_links, split_into_images, split_into_links, text_to_nodes
+from splitter import *
 from textnode import TextNode, TextType
 
 class TestExtractMarkdownImages(unittest.TestCase):
@@ -434,6 +434,93 @@ class TestTextToNodes(unittest.TestCase):
         text = ""
         result = text_to_nodes(text)
         expected = [TextNode("", TextType.NORMAL)]
+        self.assertEqual(result, expected)
+
+class TestMarkdownToBlocks(unittest.TestCase):
+    def test_single_block(self):
+        text = "This is a single block"
+        result = markdown_to_blocks(text)
+        expected = ["This is a single block"]
+        self.assertEqual(result, expected)
+
+    def test_multiple_blocks(self):
+        text = """This is the first block
+
+This is the second block
+
+This is the third block"""
+        result = markdown_to_blocks(text)
+        expected = [
+            "This is the first block",
+            "This is the second block",
+            "This is the third block"
+        ]
+        self.assertEqual(result, expected)
+
+    def test_blocks_with_extra_newlines(self):
+        text = """This is the first block
+
+
+This is the second block
+
+
+This is the third block"""
+        result = markdown_to_blocks(text)
+        expected = [
+            "This is the first block",
+            "This is the second block",
+            "This is the third block"
+        ]
+        self.assertEqual(result, expected)
+
+    def test_blocks_with_leading_trailing_spaces(self):
+        text = """   This is the first block   
+
+   This is the second block   
+
+   This is the third block   """
+        result = markdown_to_blocks(text)
+        expected = [
+            "This is the first block",
+            "This is the second block",
+            "This is the third block"
+        ]
+        self.assertEqual(result, expected)
+
+    def test_blocks_with_mixed_content(self):
+        text = """# This is a heading
+
+This is a paragraph with **bold** and _italic_ text
+
+- This is a list item
+- This is another list item
+
+> This is a blockquote"""
+        result = markdown_to_blocks(text)
+        expected = [
+            "# This is a heading",
+            "This is a paragraph with **bold** and _italic_ text",
+            "- This is a list item\n- This is another list item",
+            "> This is a blockquote"
+        ]
+        self.assertEqual(result, expected)
+
+    def test_empty_text(self):
+        text = ""
+        result = markdown_to_blocks(text)
+        expected = []
+        self.assertEqual(result, expected)
+
+    def test_text_with_only_newlines(self):
+        text = "\n\n\n"
+        result = markdown_to_blocks(text)
+        expected = []
+        self.assertEqual(result, expected)
+
+    def test_text_with_only_spaces(self):
+        text = "   \n   \n   "
+        result = markdown_to_blocks(text)
+        expected = []
         self.assertEqual(result, expected)
 
 if __name__ == "__main__":

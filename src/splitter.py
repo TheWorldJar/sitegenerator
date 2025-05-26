@@ -98,3 +98,15 @@ def text_to_nodes(text: str) -> list[TextNode]:
                     ), "_", TextType.ITALIC
                     ), "`", TextType.CODE
                     )
+
+def markdown_to_blocks(text: str) -> list[str]:
+    # Splits a full markdown file into its individual blocks
+    new_blocks = []
+    sections = text.split("\n\n")
+    for section in sections:
+        #strips leading and trailing spaces and newlines
+        #tabs should be preserved for nested lists, I think
+        stripped_section = section.strip(' \n')
+        if stripped_section != "":
+            new_blocks.append(stripped_section)
+    return new_blocks
