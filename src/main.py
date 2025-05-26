@@ -1,18 +1,14 @@
 from textnode import TextNode, TextType
 from htmlnode import HTMLNode, LeafNode, ParentNode
-from splitter import markdown_to_blocks
+from blocks import *
 
 def main():
-    md = """
-          This is **bolded** paragraph
-
-This is another paragraph with _italic_ text and `code` here
-This is the same paragraph on a new line
-
-- This is a list
-- with items        
-"""
-    print(markdown_to_blocks(md))
+    md = """1. This
+2. Is
+3. A
+Quote"""
+    print(md.split("\n"))
+    print(block_to_block_type(md))
 
 if __name__ == "__main__":
     main()
