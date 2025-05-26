@@ -52,14 +52,16 @@ def split_into_images(text_nodes: list[TextNode]) -> list[TextNode]:
         images = extract_markdown_images([node.text])
         if len(images) > 0:
             split = node.text.split(f"![{images[0][0]}]({images[0][1]})", 1)
-            new_nodes.append(TextNode(split[0], TextType.NORMAL))
+            if split[0] != "":
+                new_nodes.append(TextNode(split[0], TextType.NORMAL))
             new_nodes.append(TextNode(images[0][0], TextType.IMAGE, images[0][1]))
             if split[1] != "":
                 new_nodes.append(TextNode(split[1], TextType.NORMAL))
             for i in range (1, len(images)):
                 split = new_nodes[-1].text.split(f"![{images[i][0]}]({images[i][1]})", 1)
                 new_nodes.pop()
-                new_nodes.append(TextNode(split[0], TextType.NORMAL))
+                if split[0] != "":
+                    new_nodes.append(TextNode(split[0], TextType.NORMAL))
                 new_nodes.append(TextNode(images[i][0], TextType.IMAGE, images[i][1]))
                 if split[1] != "":
                     new_nodes.append(TextNode(split[1], TextType.NORMAL))
@@ -73,14 +75,16 @@ def split_into_links(text_nodes: list[TextNode]) -> list[TextNode]:
         links = extract_markdown_links([node.text])
         if len(links) > 0:
             split = node.text.split(f"[{links[0][0]}]({links[0][1]})", 1)
-            new_nodes.append(TextNode(split[0], TextType.NORMAL))
+            if split[0] != "":
+                new_nodes.append(TextNode(split[0], TextType.NORMAL))
             new_nodes.append(TextNode(links[0][0], TextType.LINK, links[0][1]))
             if split[1] != "":
                 new_nodes.append(TextNode(split[1], TextType.NORMAL))
             for i in range (1, len(links)):
                 split = new_nodes[-1].text.split(f"[{links[i][0]}]({links[i][1]})", 1)
                 new_nodes.pop()
-                new_nodes.append(TextNode(split[0], TextType.NORMAL))
+                if split[0] != "":
+                    new_nodes.append(TextNode(split[0], TextType.NORMAL))
                 new_nodes.append(TextNode(links[i][0], TextType.LINK, links[i][1]))
                 if split[1] != "":
                     new_nodes.append(TextNode(split[1], TextType.NORMAL))

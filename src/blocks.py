@@ -3,7 +3,12 @@ from enum import Enum
 
 class BlockType(Enum):
     PARA = "paragraph"
-    HEAD = "heading"
+    HEAD1 = "heading1"
+    HEAD2 = "heading2"
+    HEAD3 = "heading3"
+    HEAD4 = "heading4"
+    HEAD5 = "heading5"
+    HEAD6 = "heading6"
     CODE = "code"
     QUOTE = "quote"
     ULIST = "unordered list"
@@ -15,7 +20,18 @@ def block_to_block_type(block: str) -> BlockType:
     
     # The first line of the block must start with 1–6 '#'
     if re.findall(r"^#{1,6}\s", block, re.M):
-        return BlockType.HEAD
+        if re.findall(r"^#{1}\s", block, re.M):
+            return BlockType.HEAD1
+        elif re.findall(r"^#{2}\s", block, re.M):
+            return BlockType.HEAD2
+        elif re.findall(r"^#{3}\s", block, re.M):
+            return BlockType.HEAD3
+        elif re.findall(r"^#{4}\s", block, re.M):
+            return BlockType.HEAD4
+        elif re.findall(r"^#{5}\s", block, re.M):
+            return BlockType.HEAD5
+        elif re.findall(r"^#{6}\s", block, re.M):
+            return BlockType.HEAD6
     
     # The block must be any text starting and ending with '````
     elif re.findall(r"`{3}.*?`{3}",block, re.S):

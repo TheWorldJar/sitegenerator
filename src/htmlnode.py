@@ -21,16 +21,22 @@ class HTMLNode:
     
     def props_to_html(self):
         result = ""
-        for key, value in self.props.items():
-            result += f" {key}=\"{value}\""
+        if self.props != None:
+            for key, value in self.props.items():
+                result += f" {key}=\"{value}\""
         return result
     
 class LeafNode(HTMLNode):
     def __init__(self, tag: str, value: str, props: dict = None):
         super().__init__(tag, value, [], props)
 
+    def __repr__(self):
+        return f"LeafNode({self.tag}, {self.value}, {self.children}, {self.props})"
+
     def to_html(self):
-        if self.value is None or self.value == "":
+        if self.tag == "img":
+            return f"<img {self.props_to_html()}>"
+        elif self.value is None or self.value == "":
             raise ValueError("value cannot be empty")
         elif self.tag is None or self.tag == "":
             return f"{self.value}"
@@ -40,6 +46,9 @@ class LeafNode(HTMLNode):
 class ParentNode(HTMLNode):
     def __init__(self, tag: str, children: list[HTMLNode], props: dict = None):
         super().__init__(tag, None, children, props)
+
+    def __repr__(self):
+        return f"ParentNode({self.tag}, {self.value}, {self.children}, {self.props})"
 
     def to_html(self):
         if self.tag is None or self.tag == "":
