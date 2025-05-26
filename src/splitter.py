@@ -1,3 +1,4 @@
+import re
 from textnode import TextNode, TextType
 
 def split_into_nodes(text: list[str], delimiter: str, text_type: TextType) -> list[TextNode]:
@@ -13,3 +14,15 @@ def split_into_nodes(text: list[str], delimiter: str, text_type: TextType) -> li
             else:
                 raise Exception(f"Invalid delimiter: {delimiter} for text type: {text_type}")
     return new_nodes
+
+def extract_markdown_images(text: list[str]) -> list[tuple[str, str]]:
+    new_images = []
+    for text_chunk in text:
+        new_images.extend(re.findall(r"!\[([^\[\]]*)\]\(([^\(\)]*)\)", text_chunk))
+    return new_images
+
+def extract_markdown_links(text: list[str]) -> list[tuple[str, str]]:
+    new_links = []
+    for text_chunk in text:
+        new_links.extend(re.findall(r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)", text_chunk))
+    return new_links

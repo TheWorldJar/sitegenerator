@@ -1,6 +1,6 @@
 import unittest
 
-from splitter import split_into_nodes
+from splitter import split_into_nodes, extract_markdown_images, extract_markdown_links
 from textnode import TextNode, TextType
 
 class TestSplitter(unittest.TestCase):
@@ -89,6 +89,119 @@ class TestSplitter(unittest.TestCase):
         text = [""]
         result = split_into_nodes(text, "", TextType.NORMAL)
         expected = [TextNode("", TextType.NORMAL)]
+        self.assertEqual(result, expected)
+
+class TestExtractMarkdownImages(unittest.TestCase):
+    def test_single_image(self):
+        text = ["This is an image ![alt text](https://example.com/image.png)"]
+        result = extract_markdown_images(text)
+        expected = [("alt text", "https://example.com/image.png")]
+        self.assertEqual(result, expected)
+
+    def test_multiple_images(self):
+        text = [
+            "First image ![alt1](https://example.com/image1.png)",
+            "Second image ![alt2](https://example.com/image2.png)"
+        ]
+        result = extract_markdown_images(text)
+        expected = [
+            ("alt1", "https://example.com/image1.png"),
+            ("alt2", "https://example.com/image2.png")
+        ]
+        self.assertEqual(result, expected)
+
+    def test_multiple_images_in_single_line(self):
+        text = ["![alt1](https://example.com/image1.png) and ![alt2](https://example.com/image2.png)"]
+        result = extract_markdown_images(text)
+        expected = [
+            ("alt1", "https://example.com/image1.png"),
+            ("alt2", "https://example.com/image2.png")
+        ]
+        self.assertEqual(result, expected)
+
+    def test_no_images(self):
+        text = ["This is a text without any images"]
+        result = extract_markdown_images(text)
+        self.assertEqual(result, [])
+
+    def test_empty_text(self):
+        text = [""]
+        result = extract_markdown_images(text)
+        self.assertEqual(result, [])
+
+    def test_empty_list(self):
+        text = []
+        result = extract_markdown_images(text)
+        self.assertEqual(result, [])
+
+    def test_invalid_image_syntax(self):
+        text = ["This is not an image [alt](https://example.com/image.png)"]
+        result = extract_markdown_images(text)
+        self.assertEqual(result, [])
+
+class TestExtractMarkdownLinks(unittest.TestCase):
+    def test_single_link(self):
+        text = ["This is a link [link text](https://example.com)"]
+        result = extract_markdown_links(text)
+        expected = [("link text", "https://example.com")]
+        self.assertEqual(result, expected)
+
+    def test_multiple_links(self):
+        text = [
+            "First link [link1](https://example.com/1)",
+            "Second link [link2](https://example.com/2)"
+        ]
+        result = extract_markdown_links(text)
+        expected = [
+            ("link1", "https://example.com/1"),
+            ("link2", "https://example.com/2")
+        ]
+        self.assertEqual(result, expected)
+
+    def test_multiple_links_in_single_line(self):
+        text = ["[link1](https://example.com/1) and [link2](https://example.com/2)"]
+        result = extract_markdown_links(text)
+        expected = [
+            ("link1", "https://example.com/1"),
+            ("link2", "https://example.com/2")
+        ]
+        self.assertEqual(result, expected)
+
+    def test_no_links(self):
+        text = ["This is a text without any links"]
+        result = extract_markdown_links(text)
+        self.assertEqual(result, [])
+
+    def test_empty_text(self):
+        text = [""]
+        result = extract_markdown_links(text)
+        self.assertEqual(result, [])
+
+    def test_empty_list(self):
+        text = []
+        result = extract_markdown_links(text)
+        self.assertEqual(result, [])
+
+    def test_links_with_special_chars(self):
+        text = ["[link!@#$%](https://example.com/path!@#$%)"]
+        result = extract_markdown_links(text)
+        expected = [("link!@#$%", "https://example.com/path!@#$%")]
+        self.assertEqual(result, expected)
+
+    def test_mixed_content(self):
+        text = [
+            "Here's a link [link1](https://example.com/1)",
+            "And an image ![alt](https://example.com/image.png)",
+            "And another link [link2](https://example.com/2)"
+        ]
+        result = extract_markdown_links(text)
+        expected = [
+            ("link1", "https://example.com/1"),
+            ("link2", "https://example.com/2")
+        ]
+        self.assertEqual(result, expected)
+        result = extract_markdown_images(text)
+        expected = [("alt", "https://example.com/image.png")]
         self.assertEqual(result, expected)
 
 if __name__ == "__main__":
