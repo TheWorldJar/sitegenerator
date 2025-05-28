@@ -130,7 +130,6 @@ class TestSplitIntoImages(unittest.TestCase):
         text_nodes = [TextNode("![alt1](https://example.com/image1.png) and ![alt2](https://example.com/image2.png)", TextType.NORMAL)]
         result = split_into_images(text_nodes)
         expected = [
-            TextNode("", TextType.NORMAL),
             TextNode("alt1", TextType.IMAGE, "https://example.com/image1.png"),
             TextNode(" and ", TextType.NORMAL),
             TextNode("alt2", TextType.IMAGE, "https://example.com/image2.png")
@@ -172,7 +171,6 @@ class TestSplitIntoImages(unittest.TestCase):
         text_nodes = [TextNode("![alt](https://example.com/image.png) This is text after the image", TextType.NORMAL)]
         result = split_into_images(text_nodes)
         expected = [
-            TextNode("", TextType.NORMAL),
             TextNode("alt", TextType.IMAGE, "https://example.com/image.png"),
             TextNode(" This is text after the image", TextType.NORMAL)
         ]
@@ -201,7 +199,6 @@ class TestSplitIntoLinks(unittest.TestCase):
         text_nodes = [TextNode("[link1](https://example.com/1) and [link2](https://example.com/2)", TextType.NORMAL)]
         result = split_into_links(text_nodes)
         expected = [
-            TextNode("", TextType.NORMAL),
             TextNode("link1", TextType.LINK, "https://example.com/1"),
             TextNode(" and ", TextType.NORMAL),
             TextNode("link2", TextType.LINK, "https://example.com/2")
@@ -243,7 +240,6 @@ class TestSplitIntoLinks(unittest.TestCase):
         text_nodes = [TextNode("[link](https://example.com) This is text after the link", TextType.NORMAL)]
         result = split_into_links(text_nodes)
         expected = [
-            TextNode("", TextType.NORMAL),
             TextNode("link", TextType.LINK, "https://example.com"),
             TextNode(" This is text after the link", TextType.NORMAL)
         ]

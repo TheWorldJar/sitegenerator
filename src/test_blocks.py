@@ -4,12 +4,12 @@ from blocks import *
 class TestBlockToBlockType(unittest.TestCase):
     def test_heading(self):
         # Test different heading levels
-        self.assertEqual(block_to_block_type("# Heading 1"), BlockType.HEAD)
-        self.assertEqual(block_to_block_type("## Heading 2"), BlockType.HEAD)
-        self.assertEqual(block_to_block_type("### Heading 3"), BlockType.HEAD)
-        self.assertEqual(block_to_block_type("#### Heading 4"), BlockType.HEAD)
-        self.assertEqual(block_to_block_type("##### Heading 5"), BlockType.HEAD)
-        self.assertEqual(block_to_block_type("###### Heading 6"), BlockType.HEAD)
+        self.assertEqual(block_to_block_type("# Heading 1"), BlockType.HEAD1)
+        self.assertEqual(block_to_block_type("## Heading 2"), BlockType.HEAD2)
+        self.assertEqual(block_to_block_type("### Heading 3"), BlockType.HEAD3)
+        self.assertEqual(block_to_block_type("#### Heading 4"), BlockType.HEAD4)
+        self.assertEqual(block_to_block_type("##### Heading 5"), BlockType.HEAD5)
+        self.assertEqual(block_to_block_type("###### Heading 6"), BlockType.HEAD6)
 
     def test_code(self):
         # Test code blocks
