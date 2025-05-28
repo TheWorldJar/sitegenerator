@@ -47,7 +47,7 @@ class TestMarkdownToHTMLNode(unittest.TestCase):
         self.assertEqual(len(result.children), 1)
         self.assertEqual(result.children[0].tag, "pre")
         self.assertEqual(result.children[0].children[0].tag, "code")
-        self.assertEqual(result.children[0].children[0].children[0].value, "code block")
+        self.assertEqual(result.children[0].children[0].children[0].value, "\ncode block\n")
 
     def test_quote_block(self):
         markdown = "> This is a quote"

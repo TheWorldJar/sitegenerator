@@ -1,4 +1,4 @@
-from blocks import BlockType, block_to_block_type
+from blocks import BlockType, block_to_block_type, prepare_blocks
 from splitter import text_to_nodes, markdown_to_blocks
 from htmlnode import ParentNode
 from textnode import TextNode, TextType
@@ -11,6 +11,8 @@ def markdown_to_html_node(text: str) -> ParentNode:
     # convert each block into a tuple with (the block, the block's type).
     block_groups = list(map(lambda x: (x, block_to_block_type(x)), blocks))
 
+    block_groups = list(map(prepare_blocks, block_groups))
+    
     # the block in each group is converted into a list of TextNodes
     for i in range(0, len(block_groups)):
         if block_groups[i][1] is BlockType.CODE:
