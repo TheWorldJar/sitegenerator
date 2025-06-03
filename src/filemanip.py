@@ -29,7 +29,8 @@ def copy_statics(statics: list[str]):
 def prepare_dir_tree(statics: list[str]):
     for file in statics:
         new_path = os.path.dirname(file)
-        os.mkdir(PUBLIC + new_path.split(STATIC, 1)[1])
+        if new_path != STATIC:
+            os.mkdir(PUBLIC + new_path.split(STATIC, 1)[1])
 
 def copy_static_to_public():
     clear_public()
