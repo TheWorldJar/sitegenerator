@@ -3,6 +3,7 @@ import unittest
 from splitter import *
 from textnode import TextNode, TextType
 
+
 class TestExtractMarkdownImages(unittest.TestCase):
     def test_single_image(self):
         text = ["This is an image ![alt text](https://example.com/image.png)"]
@@ -13,21 +14,23 @@ class TestExtractMarkdownImages(unittest.TestCase):
     def test_multiple_images(self):
         text = [
             "First image ![alt1](https://example.com/image1.png)",
-            "Second image ![alt2](https://example.com/image2.png)"
+            "Second image ![alt2](https://example.com/image2.png)",
         ]
         result = extract_markdown_images(text)
         expected = [
             ("alt1", "https://example.com/image1.png"),
-            ("alt2", "https://example.com/image2.png")
+            ("alt2", "https://example.com/image2.png"),
         ]
         self.assertEqual(result, expected)
 
     def test_multiple_images_in_single_line(self):
-        text = ["![alt1](https://example.com/image1.png) and ![alt2](https://example.com/image2.png)"]
+        text = [
+            "![alt1](https://example.com/image1.png) and ![alt2](https://example.com/image2.png)"
+        ]
         result = extract_markdown_images(text)
         expected = [
             ("alt1", "https://example.com/image1.png"),
-            ("alt2", "https://example.com/image2.png")
+            ("alt2", "https://example.com/image2.png"),
         ]
         self.assertEqual(result, expected)
 
@@ -51,6 +54,7 @@ class TestExtractMarkdownImages(unittest.TestCase):
         result = extract_markdown_images(text)
         self.assertEqual(result, [])
 
+
 class TestExtractMarkdownLinks(unittest.TestCase):
     def test_single_link(self):
         text = ["This is a link [link text](https://example.com)"]
@@ -61,12 +65,12 @@ class TestExtractMarkdownLinks(unittest.TestCase):
     def test_multiple_links(self):
         text = [
             "First link [link1](https://example.com/1)",
-            "Second link [link2](https://example.com/2)"
+            "Second link [link2](https://example.com/2)",
         ]
         result = extract_markdown_links(text)
         expected = [
             ("link1", "https://example.com/1"),
-            ("link2", "https://example.com/2")
+            ("link2", "https://example.com/2"),
         ]
         self.assertEqual(result, expected)
 
@@ -75,7 +79,7 @@ class TestExtractMarkdownLinks(unittest.TestCase):
         result = extract_markdown_links(text)
         expected = [
             ("link1", "https://example.com/1"),
-            ("link2", "https://example.com/2")
+            ("link2", "https://example.com/2"),
         ]
         self.assertEqual(result, expected)
 
@@ -104,35 +108,46 @@ class TestExtractMarkdownLinks(unittest.TestCase):
         text = [
             "Here's a link [link1](https://example.com/1)",
             "And an image ![alt](https://example.com/image.png)",
-            "And another link [link2](https://example.com/2)"
+            "And another link [link2](https://example.com/2)",
         ]
         result = extract_markdown_links(text)
         expected = [
             ("link1", "https://example.com/1"),
-            ("link2", "https://example.com/2")
+            ("link2", "https://example.com/2"),
         ]
         self.assertEqual(result, expected)
         result = extract_markdown_images(text)
         expected = [("alt", "https://example.com/image.png")]
         self.assertEqual(result, expected)
 
+
 class TestSplitIntoImages(unittest.TestCase):
     def test_single_image(self):
-        text_nodes = [TextNode("This is an image ![alt text](https://example.com/image.png)", TextType.NORMAL)]
+        text_nodes = [
+            TextNode(
+                "This is an image ![alt text](https://example.com/image.png)",
+                TextType.NORMAL,
+            )
+        ]
         result = split_into_images(text_nodes)
         expected = [
             TextNode("This is an image ", TextType.NORMAL),
-            TextNode("alt text", TextType.IMAGE, "https://example.com/image.png")
+            TextNode("alt text", TextType.IMAGE, "https://example.com/image.png"),
         ]
         self.assertEqual(result, expected)
 
     def test_multiple_images(self):
-        text_nodes = [TextNode("![alt1](https://example.com/image1.png) and ![alt2](https://example.com/image2.png)", TextType.NORMAL)]
+        text_nodes = [
+            TextNode(
+                "![alt1](https://example.com/image1.png) and ![alt2](https://example.com/image2.png)",
+                TextType.NORMAL,
+            )
+        ]
         result = split_into_images(text_nodes)
         expected = [
             TextNode("alt1", TextType.IMAGE, "https://example.com/image1.png"),
             TextNode(" and ", TextType.NORMAL),
-            TextNode("alt2", TextType.IMAGE, "https://example.com/image2.png")
+            TextNode("alt2", TextType.IMAGE, "https://example.com/image2.png"),
         ]
         self.assertEqual(result, expected)
 
@@ -155,53 +170,75 @@ class TestSplitIntoImages(unittest.TestCase):
 
     def test_multiple_nodes(self):
         text_nodes = [
-            TextNode("First node ![alt1](https://example.com/image1.png)", TextType.NORMAL),
-            TextNode("Second node ![alt2](https://example.com/image2.png)", TextType.NORMAL)
+            TextNode(
+                "First node ![alt1](https://example.com/image1.png)", TextType.NORMAL
+            ),
+            TextNode(
+                "Second node ![alt2](https://example.com/image2.png)", TextType.NORMAL
+            ),
         ]
         result = split_into_images(text_nodes)
         expected = [
             TextNode("First node ", TextType.NORMAL),
             TextNode("alt1", TextType.IMAGE, "https://example.com/image1.png"),
             TextNode("Second node ", TextType.NORMAL),
-            TextNode("alt2", TextType.IMAGE, "https://example.com/image2.png")
+            TextNode("alt2", TextType.IMAGE, "https://example.com/image2.png"),
         ]
         self.assertEqual(result, expected)
 
     def test_image_at_start(self):
-        text_nodes = [TextNode("![alt](https://example.com/image.png) This is text after the image", TextType.NORMAL)]
+        text_nodes = [
+            TextNode(
+                "![alt](https://example.com/image.png) This is text after the image",
+                TextType.NORMAL,
+            )
+        ]
         result = split_into_images(text_nodes)
         expected = [
             TextNode("alt", TextType.IMAGE, "https://example.com/image.png"),
-            TextNode(" This is text after the image", TextType.NORMAL)
+            TextNode(" This is text after the image", TextType.NORMAL),
         ]
         self.assertEqual(result, expected)
 
     def test_image_at_end(self):
-        text_nodes = [TextNode("This is text before the image ![alt](https://example.com/image.png)", TextType.NORMAL)]
+        text_nodes = [
+            TextNode(
+                "This is text before the image ![alt](https://example.com/image.png)",
+                TextType.NORMAL,
+            )
+        ]
         result = split_into_images(text_nodes)
         expected = [
             TextNode("This is text before the image ", TextType.NORMAL),
-            TextNode("alt", TextType.IMAGE, "https://example.com/image.png")
+            TextNode("alt", TextType.IMAGE, "https://example.com/image.png"),
         ]
         self.assertEqual(result, expected)
 
+
 class TestSplitIntoLinks(unittest.TestCase):
     def test_single_link(self):
-        text_nodes = [TextNode("This is a link [link text](https://example.com)", TextType.NORMAL)]
+        text_nodes = [
+            TextNode("This is a link [link text](https://example.com)", TextType.NORMAL)
+        ]
         result = split_into_links(text_nodes)
         expected = [
             TextNode("This is a link ", TextType.NORMAL),
-            TextNode("link text", TextType.LINK, "https://example.com")
+            TextNode("link text", TextType.LINK, "https://example.com"),
         ]
         self.assertEqual(result, expected)
 
     def test_multiple_links(self):
-        text_nodes = [TextNode("[link1](https://example.com/1) and [link2](https://example.com/2)", TextType.NORMAL)]
+        text_nodes = [
+            TextNode(
+                "[link1](https://example.com/1) and [link2](https://example.com/2)",
+                TextType.NORMAL,
+            )
+        ]
         result = split_into_links(text_nodes)
         expected = [
             TextNode("link1", TextType.LINK, "https://example.com/1"),
             TextNode(" and ", TextType.NORMAL),
-            TextNode("link2", TextType.LINK, "https://example.com/2")
+            TextNode("link2", TextType.LINK, "https://example.com/2"),
         ]
         self.assertEqual(result, expected)
 
@@ -225,50 +262,67 @@ class TestSplitIntoLinks(unittest.TestCase):
     def test_multiple_nodes(self):
         text_nodes = [
             TextNode("First node [link1](https://example.com/1)", TextType.NORMAL),
-            TextNode("Second node [link2](https://example.com/2)", TextType.NORMAL)
+            TextNode("Second node [link2](https://example.com/2)", TextType.NORMAL),
         ]
         result = split_into_links(text_nodes)
         expected = [
             TextNode("First node ", TextType.NORMAL),
             TextNode("link1", TextType.LINK, "https://example.com/1"),
             TextNode("Second node ", TextType.NORMAL),
-            TextNode("link2", TextType.LINK, "https://example.com/2")
+            TextNode("link2", TextType.LINK, "https://example.com/2"),
         ]
         self.assertEqual(result, expected)
 
     def test_link_at_start(self):
-        text_nodes = [TextNode("[link](https://example.com) This is text after the link", TextType.NORMAL)]
+        text_nodes = [
+            TextNode(
+                "[link](https://example.com) This is text after the link",
+                TextType.NORMAL,
+            )
+        ]
         result = split_into_links(text_nodes)
         expected = [
             TextNode("link", TextType.LINK, "https://example.com"),
-            TextNode(" This is text after the link", TextType.NORMAL)
+            TextNode(" This is text after the link", TextType.NORMAL),
         ]
         self.assertEqual(result, expected)
 
     def test_link_at_end(self):
-        text_nodes = [TextNode("This is text before the link [link](https://example.com)", TextType.NORMAL)]
+        text_nodes = [
+            TextNode(
+                "This is text before the link [link](https://example.com)",
+                TextType.NORMAL,
+            )
+        ]
         result = split_into_links(text_nodes)
         expected = [
             TextNode("This is text before the link ", TextType.NORMAL),
-            TextNode("link", TextType.LINK, "https://example.com")
+            TextNode("link", TextType.LINK, "https://example.com"),
         ]
         self.assertEqual(result, expected)
 
     def test_mixed_content(self):
         text_nodes = [
             TextNode("Here's a link [link1](https://example.com/1)", TextType.NORMAL),
-            TextNode("And an image ![alt](https://example.com/image.png)", TextType.NORMAL),
-            TextNode("And another link [link2](https://example.com/2)", TextType.NORMAL)
+            TextNode(
+                "And an image ![alt](https://example.com/image.png)", TextType.NORMAL
+            ),
+            TextNode(
+                "And another link [link2](https://example.com/2)", TextType.NORMAL
+            ),
         ]
         result = split_into_links(text_nodes)
         expected = [
             TextNode("Here's a link ", TextType.NORMAL),
             TextNode("link1", TextType.LINK, "https://example.com/1"),
-            TextNode("And an image ![alt](https://example.com/image.png)", TextType.NORMAL),
+            TextNode(
+                "And an image ![alt](https://example.com/image.png)", TextType.NORMAL
+            ),
             TextNode("And another link ", TextType.NORMAL),
-            TextNode("link2", TextType.LINK, "https://example.com/2")
+            TextNode("link2", TextType.LINK, "https://example.com/2"),
         ]
         self.assertEqual(result, expected)
+
 
 class TestSplitByText(unittest.TestCase):
     def test_bold_text(self):
@@ -277,7 +331,7 @@ class TestSplitByText(unittest.TestCase):
         expected = [
             TextNode("This is ", TextType.NORMAL),
             TextNode("bold", TextType.BOLD),
-            TextNode(" text", TextType.NORMAL)
+            TextNode(" text", TextType.NORMAL),
         ]
         self.assertEqual(result, expected)
 
@@ -287,7 +341,7 @@ class TestSplitByText(unittest.TestCase):
         expected = [
             TextNode("This is ", TextType.NORMAL),
             TextNode("italic", TextType.ITALIC),
-            TextNode(" text", TextType.NORMAL)
+            TextNode(" text", TextType.NORMAL),
         ]
         self.assertEqual(result, expected)
 
@@ -297,26 +351,28 @@ class TestSplitByText(unittest.TestCase):
         expected = [
             TextNode("This is ", TextType.NORMAL),
             TextNode("code", TextType.CODE),
-            TextNode(" text", TextType.NORMAL)
+            TextNode(" text", TextType.NORMAL),
         ]
         self.assertEqual(result, expected)
 
     def test_multiple_bold_segments(self):
-        text_nodes = [TextNode("This is **bold** and this is also **bold**", TextType.NORMAL)]
+        text_nodes = [
+            TextNode("This is **bold** and this is also **bold**", TextType.NORMAL)
+        ]
         result = split_by_text(text_nodes, "**", TextType.BOLD)
         expected = [
             TextNode("This is ", TextType.NORMAL),
             TextNode("bold", TextType.BOLD),
             TextNode(" and this is also ", TextType.NORMAL),
             TextNode("bold", TextType.BOLD),
-            TextNode("", TextType.NORMAL)
+            TextNode("", TextType.NORMAL),
         ]
         self.assertEqual(result, expected)
 
     def test_multiple_nodes(self):
         text_nodes = [
             TextNode("First **bold** text", TextType.NORMAL),
-            TextNode("Second **bold** text", TextType.NORMAL)
+            TextNode("Second **bold** text", TextType.NORMAL),
         ]
         result = split_by_text(text_nodes, "**", TextType.BOLD)
         expected = [
@@ -325,7 +381,7 @@ class TestSplitByText(unittest.TestCase):
             TextNode(" text", TextType.NORMAL),
             TextNode("Second ", TextType.NORMAL),
             TextNode("bold", TextType.BOLD),
-            TextNode(" text", TextType.NORMAL)
+            TextNode(" text", TextType.NORMAL),
         ]
         self.assertEqual(result, expected)
 
@@ -350,7 +406,10 @@ class TestSplitByText(unittest.TestCase):
         text_nodes = [TextNode("This is **bold** text", TextType.NORMAL)]
         with self.assertRaises(Exception) as context:
             split_by_text(text_nodes, "_", TextType.BOLD)
-        self.assertEqual(str(context.exception), "Invalid delimiter: _ for text type: TextType.BOLD")
+        self.assertEqual(
+            str(context.exception), "Invalid delimiter: _ for text type: TextType.BOLD"
+        )
+
 
 class TestTextToNodes(unittest.TestCase):
     def test_plain_text(self):
@@ -365,7 +424,7 @@ class TestTextToNodes(unittest.TestCase):
         expected = [
             TextNode("This is ", TextType.NORMAL),
             TextNode("bold", TextType.BOLD),
-            TextNode(" text", TextType.NORMAL)
+            TextNode(" text", TextType.NORMAL),
         ]
         self.assertEqual(result, expected)
 
@@ -375,7 +434,7 @@ class TestTextToNodes(unittest.TestCase):
         expected = [
             TextNode("This is ", TextType.NORMAL),
             TextNode("italic", TextType.ITALIC),
-            TextNode(" text", TextType.NORMAL)
+            TextNode(" text", TextType.NORMAL),
         ]
         self.assertEqual(result, expected)
 
@@ -385,7 +444,7 @@ class TestTextToNodes(unittest.TestCase):
         expected = [
             TextNode("This is ", TextType.NORMAL),
             TextNode("code", TextType.CODE),
-            TextNode(" text", TextType.NORMAL)
+            TextNode(" text", TextType.NORMAL),
         ]
         self.assertEqual(result, expected)
 
@@ -395,7 +454,7 @@ class TestTextToNodes(unittest.TestCase):
         expected = [
             TextNode("This is a ", TextType.NORMAL),
             TextNode("link", TextType.LINK, "https://example.com"),
-            TextNode(" text", TextType.NORMAL)
+            TextNode(" text", TextType.NORMAL),
         ]
         self.assertEqual(result, expected)
 
@@ -405,7 +464,7 @@ class TestTextToNodes(unittest.TestCase):
         expected = [
             TextNode("This is an ", TextType.NORMAL),
             TextNode("image", TextType.IMAGE, "https://example.com/image.png"),
-            TextNode(" text", TextType.NORMAL)
+            TextNode(" text", TextType.NORMAL),
         ]
         self.assertEqual(result, expected)
 
@@ -422,7 +481,7 @@ class TestTextToNodes(unittest.TestCase):
             TextNode(" and ", TextType.NORMAL),
             TextNode("link", TextType.LINK, "https://example.com"),
             TextNode(" and ", TextType.NORMAL),
-            TextNode("image", TextType.IMAGE, "https://example.com/image.png")
+            TextNode("image", TextType.IMAGE, "https://example.com/image.png"),
         ]
         self.assertEqual(result, expected)
 
@@ -431,6 +490,7 @@ class TestTextToNodes(unittest.TestCase):
         result = text_to_nodes(text)
         expected = [TextNode("", TextType.NORMAL)]
         self.assertEqual(result, expected)
+
 
 class TestMarkdownToBlocks(unittest.TestCase):
     def test_single_block(self):
@@ -449,7 +509,7 @@ This is the third block"""
         expected = [
             "This is the first block",
             "This is the second block",
-            "This is the third block"
+            "This is the third block",
         ]
         self.assertEqual(result, expected)
 
@@ -465,7 +525,7 @@ This is the third block"""
         expected = [
             "This is the first block",
             "This is the second block",
-            "This is the third block"
+            "This is the third block",
         ]
         self.assertEqual(result, expected)
 
@@ -479,7 +539,7 @@ This is the third block"""
         expected = [
             "This is the first block",
             "This is the second block",
-            "This is the third block"
+            "This is the third block",
         ]
         self.assertEqual(result, expected)
 
@@ -497,7 +557,7 @@ This is a paragraph with **bold** and _italic_ text
             "# This is a heading",
             "This is a paragraph with **bold** and _italic_ text",
             "- This is a list item\n- This is another list item",
-            "> This is a blockquote"
+            "> This is a blockquote",
         ]
         self.assertEqual(result, expected)
 
@@ -519,6 +579,6 @@ This is a paragraph with **bold** and _italic_ text
         expected = []
         self.assertEqual(result, expected)
 
+
 if __name__ == "__main__":
     unittest.main()
-    

@@ -3,6 +3,7 @@ from conversion import markdown_to_html_node
 from htmlnode import ParentNode, LeafNode
 from blocks import BlockType
 
+
 class TestMarkdownToHTMLNode(unittest.TestCase):
     def test_empty_markdown(self):
         markdown = ""
@@ -47,7 +48,9 @@ class TestMarkdownToHTMLNode(unittest.TestCase):
         self.assertEqual(len(result.children), 1)
         self.assertEqual(result.children[0].tag, "pre")
         self.assertEqual(result.children[0].children[0].tag, "code")
-        self.assertEqual(result.children[0].children[0].children[0].value, "\ncode block\n")
+        self.assertEqual(
+            result.children[0].children[0].children[0].value, "\ncode block\n"
+        )
 
     def test_quote_block(self):
         markdown = "> This is a quote"
@@ -66,9 +69,13 @@ class TestMarkdownToHTMLNode(unittest.TestCase):
         self.assertEqual(result.children[0].children[0].tag, "ul")
         self.assertEqual(len(result.children[0].children[0].children), 2)
         self.assertEqual(result.children[0].children[0].children[0].tag, "li")
-        self.assertEqual(result.children[0].children[0].children[0].children[0].value, "Item 1")
+        self.assertEqual(
+            result.children[0].children[0].children[0].children[0].value, "Item 1"
+        )
         self.assertEqual(result.children[0].children[0].children[1].tag, "li")
-        self.assertEqual(result.children[0].children[0].children[1].children[0].value, "Item 2")
+        self.assertEqual(
+            result.children[0].children[0].children[1].children[0].value, "Item 2"
+        )
 
     def test_ordered_list(self):
         markdown = "1. Item 1\n2. Item 2"
@@ -79,9 +86,13 @@ class TestMarkdownToHTMLNode(unittest.TestCase):
         self.assertEqual(result.children[0].children[0].tag, "ol")
         self.assertEqual(len(result.children[0].children[0].children), 2)
         self.assertEqual(result.children[0].children[0].children[0].tag, "li")
-        self.assertEqual(result.children[0].children[0].children[0].children[0].value, "Item 1")
+        self.assertEqual(
+            result.children[0].children[0].children[0].children[0].value, "Item 1"
+        )
         self.assertEqual(result.children[0].children[0].children[1].tag, "li")
-        self.assertEqual(result.children[0].children[0].children[1].children[0].value, "Item 2")
+        self.assertEqual(
+            result.children[0].children[0].children[1].children[0].value, "Item 2"
+        )
 
     def test_mixed_content(self):
         markdown = "# Title\n\nThis is a paragraph with **bold** and _italic_ text\n\n- List item 1\n- List item 2"
@@ -92,7 +103,9 @@ class TestMarkdownToHTMLNode(unittest.TestCase):
         self.assertEqual(result.children[0].children[0].value, "Title")
         self.assertEqual(result.children[1].tag, "p")
         self.assertEqual(len(result.children[1].children), 5)
-        self.assertEqual(result.children[1].children[0].value, "This is a paragraph with ")
+        self.assertEqual(
+            result.children[1].children[0].value, "This is a paragraph with "
+        )
         self.assertEqual(result.children[1].children[1].tag, "b")
         self.assertEqual(result.children[1].children[1].value, "bold")
         self.assertEqual(result.children[1].children[2].value, " and ")
@@ -102,5 +115,6 @@ class TestMarkdownToHTMLNode(unittest.TestCase):
         self.assertEqual(result.children[2].tag, "p")
         self.assertEqual(result.children[2].children[0].tag, "ul")
 
+
 if __name__ == "__main__":
-    unittest.main() 
+    unittest.main()

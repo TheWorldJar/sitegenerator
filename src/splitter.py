@@ -1,7 +1,10 @@
 import re
 from textnode import TextNode, TextType
 
-def split_by_text(text_nodes: list[TextNode], delimiter: str, text_type: TextType) -> list[TextNode]:
+
+def split_by_text(
+    text_nodes: list[TextNode], delimiter: str, text_type: TextType
+) -> list[TextNode]:
     # This function does not allow for nested elements.
     new_nodes = []
     for node in text_nodes:
@@ -16,23 +19,32 @@ def split_by_text(text_nodes: list[TextNode], delimiter: str, text_type: TextTyp
                 case ("`", TextType.CODE):
                     matches = re.findall(r"\`(.*?)\`", node.text)
                 case _:
-                    raise Exception(f"Invalid delimiter: {delimiter} for text type: {text_type}")
+                    raise Exception(
+                        f"Invalid delimiter: {delimiter} for text type: {text_type}"
+                    )
             if len(matches) > 0:
                 split = node.text.split(matches[0], 1)
                 new_nodes.append(TextNode(split[0].strip(delimiter), TextType.NORMAL))
                 new_nodes.append(TextNode(matches[0], text_type))
                 if split[1] != "" or split[1] != delimiter:
-                    new_nodes.append(TextNode(split[1].strip(delimiter), TextType.NORMAL))
-                for i in range (1, len(matches)):
+                    new_nodes.append(
+                        TextNode(split[1].strip(delimiter), TextType.NORMAL)
+                    )
+                for i in range(1, len(matches)):
                     split = new_nodes[-1].text.split(matches[i], 1)
                     new_nodes.pop()
-                    new_nodes.append(TextNode(split[0].strip(delimiter), TextType.NORMAL))
+                    new_nodes.append(
+                        TextNode(split[0].strip(delimiter), TextType.NORMAL)
+                    )
                     new_nodes.append(TextNode(matches[i], text_type))
                     if split[1] != "" or split[1] != delimiter:
-                        new_nodes.append(TextNode(split[1].strip(delimiter), TextType.NORMAL))
+                        new_nodes.append(
+                            TextNode(split[1].strip(delimiter), TextType.NORMAL)
+                        )
             else:
                 new_nodes.append(node)
     return new_nodes
+
 
 def extract_markdown_images(text: list[str]) -> list[tuple[str, str]]:
     new_images = []
@@ -40,11 +52,13 @@ def extract_markdown_images(text: list[str]) -> list[tuple[str, str]]:
         new_images.extend(re.findall(r"!\[([^\[\]]*)\]\(([^\(\)]*)\)", text_chunk))
     return new_images
 
+
 def extract_markdown_links(text: list[str]) -> list[tuple[str, str]]:
     new_links = []
     for text_chunk in text:
         new_links.extend(re.findall(r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)", text_chunk))
     return new_links
+
 
 def split_into_images(text_nodes: list[TextNode]) -> list[TextNode]:
     new_nodes = []
@@ -57,8 +71,10 @@ def split_into_images(text_nodes: list[TextNode]) -> list[TextNode]:
             new_nodes.append(TextNode(images[0][0], TextType.IMAGE, images[0][1]))
             if split[1] != "":
                 new_nodes.append(TextNode(split[1], TextType.NORMAL))
-            for i in range (1, len(images)):
-                split = new_nodes[-1].text.split(f"![{images[i][0]}]({images[i][1]})", 1)
+            for i in range(1, len(images)):
+                split = new_nodes[-1].text.split(
+                    f"![{images[i][0]}]({images[i][1]})", 1
+                )
                 new_nodes.pop()
                 if split[0] != "":
                     new_nodes.append(TextNode(split[0], TextType.NORMAL))
@@ -68,7 +84,8 @@ def split_into_images(text_nodes: list[TextNode]) -> list[TextNode]:
         else:
             new_nodes.append(node)
     return new_nodes
-    
+
+
 def split_into_links(text_nodes: list[TextNode]) -> list[TextNode]:
     new_nodes = []
     for node in text_nodes:
@@ -80,7 +97,7 @@ def split_into_links(text_nodes: list[TextNode]) -> list[TextNode]:
             new_nodes.append(TextNode(links[0][0], TextType.LINK, links[0][1]))
             if split[1] != "":
                 new_nodes.append(TextNode(split[1], TextType.NORMAL))
-            for i in range (1, len(links)):
+            for i in range(1, len(links)):
                 split = new_nodes[-1].text.split(f"[{links[i][0]}]({links[i][1]})", 1)
                 new_nodes.pop()
                 if split[0] != "":
@@ -92,25 +109,31 @@ def split_into_links(text_nodes: list[TextNode]) -> list[TextNode]:
             new_nodes.append(node)
     return new_nodes
 
+
 def text_to_nodes(text: str) -> list[TextNode]:
     return split_by_text(
         split_by_text(
             split_by_text(
-                split_into_links(
-                    split_into_images([TextNode(text, TextType.NORMAL)])
-                    ), "**", TextType.BOLD
-                    ), "_", TextType.ITALIC
-                    ), "`", TextType.CODE
-                    )
+                split_into_links(split_into_images([TextNode(text, TextType.NORMAL)])),
+                "**",
+                TextType.BOLD,
+            ),
+            "_",
+            TextType.ITALIC,
+        ),
+        "`",
+        TextType.CODE,
+    )
+
 
 def markdown_to_blocks(text: str) -> list[str]:
     # Splits a full markdown file into its individual blocks
     new_blocks = []
     sections = text.split("\n\n")
     for section in sections:
-        #strips leading and trailing spaces and newlines
-        #tabs should be preserved for nested lists, I think
-        stripped_section = section.strip(' \n')
+        # strips leading and trailing spaces and newlines
+        # tabs should be preserved for nested lists, I think
+        stripped_section = section.strip(" \n")
         if stripped_section != "":
             new_blocks.append(stripped_section)
     return new_blocks

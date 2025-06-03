@@ -1,5 +1,11 @@
 class HTMLNode:
-    def __init__(self, tag: str = None, value: str = None, children: list = None, props: dict = None):
+    def __init__(
+        self,
+        tag: str = None,
+        value: str = None,
+        children: list = None,
+        props: dict = None,
+    ):
         self.tag = tag
         self.value = value
         self.children = children
@@ -15,17 +21,18 @@ class HTMLNode:
 
     def __repr__(self):
         return f"HTMLNode({self.tag}, {self.value}, {self.children}, {self.props})"
-    
+
     def to_html(self):
         raise NotImplementedError("to_html is not implemented")
-    
+
     def props_to_html(self):
         result = ""
         if self.props != None:
             for key, value in self.props.items():
-                result += f" {key}=\"{value}\""
+                result += f' {key}="{value}"'
         return result
-    
+
+
 class LeafNode(HTMLNode):
     def __init__(self, tag: str, value: str, props: dict = None):
         super().__init__(tag, value, [], props)
@@ -42,7 +49,8 @@ class LeafNode(HTMLNode):
             return f"{self.value}"
         else:
             return f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>"
-        
+
+
 class ParentNode(HTMLNode):
     def __init__(self, tag: str, children: list[HTMLNode], props: dict = None):
         super().__init__(tag, None, children, props)
@@ -56,4 +64,8 @@ class ParentNode(HTMLNode):
         elif self.children is None or len(self.children) == 0:
             raise ValueError("children cannot be empty")
         else:
-            return f"<{self.tag}{self.props_to_html()}>" + "".join(map(lambda x: x.to_html(), self.children)) + f"</{self.tag}>"
+            return (
+                f"<{self.tag}{self.props_to_html()}>"
+                + "".join(map(lambda x: x.to_html(), self.children))
+                + f"</{self.tag}>"
+            )
