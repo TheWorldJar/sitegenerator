@@ -137,3 +137,13 @@ def markdown_to_blocks(text: str) -> list[str]:
         if stripped_section != "":
             new_blocks.append(stripped_section)
     return new_blocks
+
+def extract_title(text: str) -> tuple[str, str]:
+    split_text = text.split('\n\n')
+    if re.findall(r"^#{1}\s", split_text[0]):
+        if len(split_text) == 2:
+            return (split_text[0].strip(" \n#"), split_text[1])
+        else:
+            return (split_text[0].strip(" \n#"), "")
+    else:
+        raise Exception("Document title not found on the fist line!")

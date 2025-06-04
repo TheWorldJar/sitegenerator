@@ -580,5 +580,43 @@ This is a paragraph with **bold** and _italic_ text
         self.assertEqual(result, expected)
 
 
+class TestExtractTitle(unittest.TestCase):
+    def test_valid_title_and_body(self):
+        text = "# My Title\n\nThis is the body text"
+        result = extract_title(text)
+        expected = ("My Title", "This is the body text")
+        self.assertEqual(result, expected)
+
+    def test_no_title(self):
+        text = "This is not a title\n\nThis is the body text"
+        with self.assertRaises(Exception) as context:
+            extract_title(text)
+        self.assertEqual(str(context.exception), "Document title not found on the fist line!")
+
+    def test_title_without_body(self):
+        text = "# My Title"
+        result = extract_title(text)
+        expected = ("My Title", "")
+        self.assertEqual(result, expected)
+
+    def test_title_with_empty_body(self):
+        text = "# My Title\n\n"
+        result = extract_title(text)
+        expected = ("My Title", "")
+        self.assertEqual(result, expected)
+
+    def test_title_with_special_chars(self):
+        text = "# My Title with !@#$%^&*()\n\nThis is the body"
+        result = extract_title(text)
+        expected = ("My Title with !@#$%^&*()", "This is the body")
+        self.assertEqual(result, expected)
+
+    def test_title_with_extra_spaces(self):
+        text = "#   My Title with extra spaces   \n\nThis is the body"
+        result = extract_title(text)
+        expected = ("My Title with extra spaces", "This is the body")
+        self.assertEqual(result, expected)
+
+
 if __name__ == "__main__":
     unittest.main()
