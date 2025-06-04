@@ -69,7 +69,7 @@ def prepare_blocks(block: tuple[str, BlockType]) -> tuple[str, BlockType]:
         ):
             out = (re.sub(r"^#{1,6}\s", "", block[0]), block[1])
         case BlockType.CODE:
-            out = (re.sub(r"`{3}", "", block[0]), block[1])
+            out = (re.sub(r"`{3}", "", block[0]).strip("\n"), block[1])
         case BlockType.QUOTE:
             # This does not support inline >
             out = (re.sub(r">\s|>", "", block[0]), block[1])
