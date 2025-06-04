@@ -365,7 +365,6 @@ class TestSplitByText(unittest.TestCase):
             TextNode("bold", TextType.BOLD),
             TextNode(" and this is also ", TextType.NORMAL),
             TextNode("bold", TextType.BOLD),
-            TextNode("", TextType.NORMAL),
         ]
         self.assertEqual(result, expected)
 
@@ -591,7 +590,9 @@ class TestExtractTitle(unittest.TestCase):
         text = "This is not a title\n\nThis is the body text"
         with self.assertRaises(Exception) as context:
             extract_title(text)
-        self.assertEqual(str(context.exception), "Document title not found on the fist line!")
+        self.assertEqual(
+            str(context.exception), "Document title not found on the fist line!"
+        )
 
     def test_title_without_body(self):
         text = "# My Title"

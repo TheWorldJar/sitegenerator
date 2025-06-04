@@ -3,10 +3,12 @@ import os, shutil
 PUBLIC = "./public"
 STATIC = "./static"
 
+
 def clear_public():
     if os.path.exists(PUBLIC):
         shutil.rmtree(PUBLIC)
     os.mkdir(PUBLIC)
+
 
 def find_statics(path: str) -> list[str]:
     files = []
@@ -21,16 +23,19 @@ def find_statics(path: str) -> list[str]:
                 files.append(os.path.join(path, file))
     return files
 
+
 def copy_statics(statics: list[str]):
     for file in statics:
         dst_path = PUBLIC + file.split(STATIC, 1)[1]
         shutil.copy(file, dst_path)
+
 
 def prepare_dir_tree(statics: list[str]):
     for file in statics:
         new_path = os.path.dirname(file)
         if new_path != STATIC:
             os.mkdir(PUBLIC + new_path.split(STATIC, 1)[1])
+
 
 def copy_static_to_public():
     clear_public()

@@ -25,7 +25,9 @@ def split_by_text(
             if len(matches) > 0:
                 split = node.text.split(matches[0], 1)
                 if split[0] != "" and split[0] != delimiter:
-                    new_nodes.append(TextNode(split[0].strip(delimiter), TextType.NORMAL))
+                    new_nodes.append(
+                        TextNode(split[0].strip(delimiter), TextType.NORMAL)
+                    )
                 new_nodes.append(TextNode(matches[0].strip(delimiter), text_type))
                 if split[1] != "" and split[1] != delimiter:
                     new_nodes.append(
@@ -34,9 +36,9 @@ def split_by_text(
                 for i in range(1, len(matches)):
                     split = new_nodes[-1].text.split(matches[i], 1)
                     new_nodes.pop()
-                    if split [0] != "" and split[0] != delimiter:
+                    if split[0] != "" and split[0] != delimiter:
                         new_nodes.append(
-                        TextNode(split[0].strip(delimiter), TextType.NORMAL)
+                            TextNode(split[0].strip(delimiter), TextType.NORMAL)
                         )
                     new_nodes.append(TextNode(matches[i].strip(delimiter), text_type))
                     if split[1] != "" and split[1] != delimiter:
@@ -140,8 +142,9 @@ def markdown_to_blocks(text: str) -> list[str]:
             new_blocks.append(stripped_section)
     return new_blocks
 
+
 def extract_title(text: str) -> tuple[str, str]:
-    split_text = text.split('\n\n', 1)
+    split_text = text.split("\n\n", 1)
     if re.findall(r"^#{1}\s", split_text[0]):
         if len(split_text) == 2:
             return (split_text[0].strip(" \n#"), split_text[1])

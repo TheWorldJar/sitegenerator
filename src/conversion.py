@@ -22,7 +22,10 @@ def markdown_to_html_node(text: str) -> ParentNode:
                 [TextNode(block_groups[i][0], TextType.NORMAL)],
                 block_groups[i][1],
             )
-        elif block_groups[i][1] is BlockType.ULIST or block_groups[i][1] is BlockType.OLIST:
+        elif (
+            block_groups[i][1] is BlockType.ULIST
+            or block_groups[i][1] is BlockType.OLIST
+        ):
             new_nodes = []
             if re.findall(r"\n", block_groups[i][0]):
                 list_elements = block_groups[i][0].split("\n")
@@ -31,9 +34,9 @@ def markdown_to_html_node(text: str) -> ParentNode:
                 block_groups[i] = (new_nodes, block_groups[i][1])
             else:
                 block_groups[i] = (
-                [TextNode(block_groups[i][0], TextType.NORMAL)],
-                block_groups[i][1],
-            )
+                    [TextNode(block_groups[i][0], TextType.NORMAL)],
+                    block_groups[i][1],
+                )
         else:
             block_groups[i] = (text_to_nodes(block_groups[i][0]), block_groups[i][1])
 
@@ -80,7 +83,9 @@ def li_nodes_builder(nodes: list[TextNode]) -> list[ParentNode]:
     li_nodes = []
     for node in nodes:
         new_nodes = text_to_nodes(node.text)
-        li_nodes.append(ParentNode("li", list(map(lambda x: x.to_html_node(), new_nodes))))
+        li_nodes.append(
+            ParentNode("li", list(map(lambda x: x.to_html_node(), new_nodes)))
+        )
     return li_nodes
 
 
