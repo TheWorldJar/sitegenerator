@@ -5,10 +5,10 @@ from textnode import TextNode, TextType
 def split_by_text(
     text_nodes: list[TextNode], delimiter: str, text_type: TextType
 ) -> list[TextNode]:
-    # This function does not allow for nested elements.
+    # Does not support nested line elements. FIX LATER.
     new_nodes = []
     for node in text_nodes:
-        if node.text_type != TextType.NORMAL:
+        if node.text_type is not TextType.NORMAL:
             new_nodes.append(node)
         else:
             match (delimiter, text_type):
@@ -24,20 +24,22 @@ def split_by_text(
                     )
             if len(matches) > 0:
                 split = node.text.split(matches[0], 1)
-                new_nodes.append(TextNode(split[0].strip(delimiter), TextType.NORMAL))
-                new_nodes.append(TextNode(matches[0], text_type))
-                if split[1] != "" or split[1] != delimiter:
+                if split[0] != "" and split[0] != delimiter:
+                    new_nodes.append(TextNode(split[0].strip(delimiter), TextType.NORMAL))
+                new_nodes.append(TextNode(matches[0].strip(delimiter), text_type))
+                if split[1] != "" and split[1] != delimiter:
                     new_nodes.append(
                         TextNode(split[1].strip(delimiter), TextType.NORMAL)
                     )
                 for i in range(1, len(matches)):
                     split = new_nodes[-1].text.split(matches[i], 1)
                     new_nodes.pop()
-                    new_nodes.append(
+                    if split [0] != "" and split[0] != delimiter:
+                        new_nodes.append(
                         TextNode(split[0].strip(delimiter), TextType.NORMAL)
-                    )
-                    new_nodes.append(TextNode(matches[i], text_type))
-                    if split[1] != "" or split[1] != delimiter:
+                        )
+                    new_nodes.append(TextNode(matches[i].strip(delimiter), text_type))
+                    if split[1] != "" and split[1] != delimiter:
                         new_nodes.append(
                             TextNode(split[1].strip(delimiter), TextType.NORMAL)
                         )
@@ -115,14 +117,14 @@ def text_to_nodes(text: str) -> list[TextNode]:
         split_by_text(
             split_by_text(
                 split_into_links(split_into_images([TextNode(text, TextType.NORMAL)])),
-                "**",
-                TextType.BOLD,
+                "`",
+                TextType.CODE,
             ),
             "_",
             TextType.ITALIC,
         ),
-        "`",
-        TextType.CODE,
+        "**",
+        TextType.BOLD,
     )
 
 
@@ -139,7 +141,7 @@ def markdown_to_blocks(text: str) -> list[str]:
     return new_blocks
 
 def extract_title(text: str) -> tuple[str, str]:
-    split_text = text.split('\n\n')
+    split_text = text.split('\n\n', 1)
     if re.findall(r"^#{1}\s", split_text[0]):
         if len(split_text) == 2:
             return (split_text[0].strip(" \n#"), split_text[1])

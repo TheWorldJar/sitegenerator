@@ -1,3 +1,4 @@
+import re
 from blocks import BlockType, block_to_block_type, prepare_blocks
 from splitter import text_to_nodes, markdown_to_blocks
 from htmlnode import ParentNode
@@ -18,6 +19,18 @@ def markdown_to_html_node(text: str) -> ParentNode:
     for i in range(0, len(block_groups)):
         if block_groups[i][1] is BlockType.CODE:
             block_groups[i] = (
+                [TextNode(block_groups[i][0], TextType.NORMAL)],
+                block_groups[i][1],
+            )
+        elif block_groups[i][1] is BlockType.ULIST or block_groups[i][1] is BlockType.OLIST:
+            new_nodes = []
+            if re.findall(r"\n", block_groups[i][0]):
+                list_elements = block_groups[i][0].split("\n")
+                for element in list_elements:
+                    new_nodes.append(TextNode(element, TextType.NORMAL))
+                block_groups[i] = (new_nodes, block_groups[i][1])
+            else:
+                block_groups[i] = (
                 [TextNode(block_groups[i][0], TextType.NORMAL)],
                 block_groups[i][1],
             )
@@ -50,12 +63,7 @@ def parent_node_builder(
                 [
                     ParentNode(
                         type_to_tag(block_type),
-                        list(
-                            map(
-                                lambda x: ParentNode("li", [x.to_html_node()]),
-                                split_text_node(nodes[0]),
-                            )
-                        ),
+                        li_nodes_builder(nodes),
                     )
                 ],
             )
@@ -68,12 +76,12 @@ def parent_node_builder(
         ]
 
 
-def split_text_node(node: TextNode) -> list[TextNode]:
-    lines = node.text.split("\n")
-    new_nodes = []
-    for line in lines:
-        new_nodes.append(TextNode(line, TextType.NORMAL))
-    return new_nodes
+def li_nodes_builder(nodes: list[TextNode]) -> list[ParentNode]:
+    li_nodes = []
+    for node in nodes:
+        new_nodes = text_to_nodes(node.text)
+        li_nodes.append(ParentNode("li", list(map(lambda x: x.to_html_node(), new_nodes))))
+    return li_nodes
 
 
 def type_to_tag(block_type: BlockType) -> str:
