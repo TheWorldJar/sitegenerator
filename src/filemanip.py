@@ -34,7 +34,10 @@ def prepare_dir_tree(statics: list[str]):
     for file in statics:
         new_path = os.path.dirname(file)
         if new_path != STATIC:
-            os.mkdir(PUBLIC + new_path.split(STATIC, 1)[1])
+            try:
+                os.mkdir(PUBLIC + new_path.split(STATIC, 1)[1])
+            except FileExistsError:
+                pass
 
 
 def copy_static_to_public():

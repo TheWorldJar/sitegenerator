@@ -10,7 +10,7 @@ def main():
     generate_page(
         "./content/blog/glorfindel/index.md",
         "template.html",
-        "./public/blog/glorfinder/index.html",
+        "./public/blog/glorfindel/index.html",
     )
     generate_page(
         "./content/blog/tom/index.md",

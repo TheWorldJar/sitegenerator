@@ -19,5 +19,15 @@ def generate_page(from_path: str, template_path: str, dest_path: str):
             html_title,
             re.sub(r"\{\{\sContent\s\}\}", html_body, read_template),
         )
+        prepare_dest(dest_path)
         with open(dest_path, "w") as dest:
             dest.write(full_html)
+
+
+def prepare_dest(dest_path: str):
+    if not os.path.isdir(dest_path):
+        print(f"Preparing destination directory {dest_path}")
+        try:
+            os.makedirs(os.path.dirname(dest_path))
+        except FileExistsError:
+            pass
