@@ -8,7 +8,7 @@ def main():
     if len(sys.argv) > 1:
         basepath = sys.argv[1]
     copy_static_to_public()
-    find_pages("./content", "template.html", "./public", basepath)
+    find_pages("./content", "template.html", "./docs", basepath)
 
 
 if __name__ == "__main__":
