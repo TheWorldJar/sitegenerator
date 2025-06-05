@@ -34,8 +34,8 @@ def generate_page(from_path: str, template_path: str, dest_path: str, basepath: 
         html_title = LeafNode("h1", split_file[0]).to_html()
         full_html = re.sub(
             r"\{\{\sTitle\s\}\}",
-            html_title,
-            re.sub(r"\{\{\sContent\s\}\}", html_body, read_template),
+            re.sub(r"^\<h1\>", "", re.sub(r"\<\/h1\>", "", html_title)),
+            re.sub(r"\{\{\sContent\s\}\}", html_title + html_body, read_template),
         )
         full_html = re.sub(r"href=\"\/", 'href="' + basepath, full_html)
         full_html = re.sub(r"src=\"\/", 'src="' + basepath, full_html)
